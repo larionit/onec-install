@@ -5,11 +5,11 @@
 
 # onec-install
 
-<img align="left" width="70" height="70" src="">
+<img align="left" width="70" height="70" src="https://github.com/user-attachments/assets/c8a79cc2-07d3-4afd-a57e-4e43b0335921">
 
 Скрипты для автоматической установки 1C Предприятие 8.
 
-Thanks to: [oneget](https://github.com/v8platform/oneget) and its [fork](https://github.com/Pringlas/oneget).
+Благодарности: [oneget](https://github.com/v8platform/oneget) и её [форку](https://github.com/Pringlas/oneget).
 
 ## Быстрый старт
 
