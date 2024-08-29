@@ -5,7 +5,7 @@
 
 # onec-install
 
-<img align="left" width="70" height="70" src="">
+<img align="left" width="70" height="70" src="https://github.com/user-attachments/assets/c8a79cc2-07d3-4afd-a57e-4e43b0335921">
 
 Scripts for Automatic deployment of 1C Enterprise 8.
 
