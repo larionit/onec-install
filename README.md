@@ -1,7 +1,7 @@
 [RU] | [EN]
 
-[RU]: https://github.com/larionit/onec-install/blob/dev/ru/README.md
-[EN]: https://github.com/larionit/onec-install/blob/dev/README.md
+[RU]: https://github.com/larionit/onec-install/blob/main/ru/README.md
+[EN]: https://github.com/larionit/onec-install/blob/main/README.md
 
 # onec-install
 
@@ -16,5 +16,5 @@ Thanks to: [oneget](https://github.com/v8platform/oneget) and its [fork](https:/
 Ubuntu:
 
 ``` bash
-bash <(curl -fsSL https://raw.githubusercontent.com/larionit/onec-install/dev/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/larionit/onec-install/main/setup.sh)
 ```

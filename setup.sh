@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Link to installable script
-target_script_url=https://raw.githubusercontent.com/larionit/onec-install/dev/onec-install.sh
+target_script_url=https://raw.githubusercontent.com/larionit/onec-install/main/onec-install.sh
 
 # Link to this installation script (needed in case of privilege escalation via sudo)
-setup_script_url=https://raw.githubusercontent.com/larionit/onec-install/dev/setup.sh
+setup_script_url=https://raw.githubusercontent.com/larionit/onec-install/main/setup.sh
 
 # Temporary file for this installation script (needed in case of sudo privilege escalation)
 temp_setup_script=$(mktemp)
