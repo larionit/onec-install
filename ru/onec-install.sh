@@ -55,6 +55,24 @@ logfile_path="${script_dir}/${script_name%%.*}.log"
 echo_tab='     '
 show_ip=$(hostname -I)
 
+# Gilev TPC-1C
+onec_db_new_name=gilev
+onec_db_new_dt_url="http://www.gilev.ru/1c/tpc/GILV_TPC_G1C_83.dt"
+onec_db_new_dt=$(basename "$onec_db_new_dt_url")
+
+# The directory where the installed releases of the 1C Enterprise 8 platform are located
+onec_dir_platform=/opt/1cv8/x86_64
+
+# 1C RAS
+onec_ras_server=localhost
+onec_ras_port=1545
+
+# DBMS
+onec_dbms=PostgreSQL
+onec_dbms_server=localhost
+onec_dbms_user=postgres
+onec_dbms_pass="${pg_pass}"
+
 ### ======== Settings ======== ###
 
 ### -------- Functions -------- ###
@@ -103,6 +121,53 @@ function read_pass {
     echo
 }
 
+# Function that creates a new base in a 1C cluster from a .dt file
+function onec_create_db_dt {
+    # Defining the 1С cluster guid
+    cluster_guid=$($onec_rac_path $onec_ras_server:$onec_ras_port cluster list | grep cluster | awk '{print $3}')
+
+    # Downloading .dt upload file
+    curl -fsSL $onec_db_new_dt_url -O
+
+    # Creating a 1С base from a .dt file in a DBMS directly
+    $onec_ibcmd_path infobase create --dbms=$onec_dbms \
+    --db-server=$onec_dbms_server --db-user=$onec_dbms_user --db-pwd=$onec_dbms_pass \
+    --db-name=$onec_db_new_name --create-database --restore=$onec_db_new_dt
+
+    # Adding the created base to 1C cluster
+    $onec_rac_path $onec_ras_server:$onec_ras_port infobase \
+    --cluster=$cluster_guid create \
+    --name="$onec_db_new_name" \
+    --dbms="$onec_dbms" \
+    --db-server="$onec_dbms_server" \
+    --db-name="$onec_db_new_name" \
+    --locale=ru \
+    --db-user="$onec_dbms_user" \
+    --db-pwd="$onec_dbms_pass" \
+    --license-distribution=allow
+
+    # Getting the list of bases in the 1С cluster
+    data=$($onec_rac_path $onec_ras_server:$onec_ras_port infobase summary list --cluster=$cluster_guid | awk '{print $3}')
+
+    # Set the 1C base name in the variable
+    search_value="${onec_db_new_name}"
+
+    # Determining the guid of a 1C base by its name
+    prev=
+    while read -r line; do
+        if [ ! -z "${prev}" ];then
+            line_one="${prev}"
+            line_two="${line}"
+            if [[ "$line_two" == "$search_value" ]]; then
+                previous_line=$(echo "$line_one")  
+                onec_db_guid=$(echo "$previous_line")
+                exit 0
+            fi
+        fi
+    prev="${line}"
+    done <<< "$data"
+}
+
 ### -------- Functions -------- ###
 
 ### -------- Preparation -------- ###
@@ -120,9 +185,9 @@ exec > >(tee -a "$logfile_path") 2>&1
 # Print message to console
 clear
 echo
-echo "Запущен скрипт: $script_name"
+echo "Cкрипт: $script_name"
 echo
-echo "Лог пишется в: $logfile_path"
+echo "Лог: $logfile_path"
 echo
 echo "Будут установлены:"
 echo
@@ -145,13 +210,13 @@ clear
 echo
 
 # Getting ITS account login
-read -p "ИТС -> Логин: " onec_its_user
+read -p "ИТС -> логин: " onec_its_user
 
 # Getting ITS account password
-read_pass "ИТС -> Пароль: " "onec_its_pass"
+read_pass "ИТС -> пароль: " "onec_its_pass"
 
 # Get password for postgres user
-read_pass "СУБД -> Пароль для пользователя postgres: " "pg_pass"
+read_pass "СУБД -> пароль для пользователя postgres: " "pg_pass"
 
 ### -------- Receiving data from user -------- ###
 
@@ -299,6 +364,22 @@ rm $pg_repo_sh
 pg_installed_version=$(postgres --version | awk '{print $3}')
 
 ### -------- Postgres Pro -------- ###
+
+### -------- Gilev TPC-1C -------- ###
+
+# Determining the most recent version of the platform among the installed ones
+onec_release_latest_installed=$(ls $onec_dir_platform | sort -nk 2 | tail -1)
+
+# Path to rac utility
+onec_rac_path="${onec_dir_platform}/${onec_release_latest_installed}/rac"
+
+# Path to the idcmd utility
+onec_ibcmd_path="${onec_dir_platform}/${onec_release_latest_installed}/ibcmd"
+
+# Starting the function of base creation
+onec_create_db_dt
+
+### -------- Gilev TPC-1C -------- ###
 
 ### -------- Message at the end -------- ###
 

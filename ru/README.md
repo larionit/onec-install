@@ -9,7 +9,7 @@
 
 Скрипты для автоматической установки 1C Предприятие 8.
 
-Thanks to: [oneget](https://github.com/v8platform/oneget) and its [fork](https://github.com/Pringlas/oneget).
+Благодарности: [oneget](https://github.com/v8platform/oneget) и [форк oneget](https://github.com/Pringlas/oneget).
 
 ## Быстрый старт
 
