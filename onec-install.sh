@@ -210,6 +210,10 @@ function message_at_the_end {
     echo
     echo "IP: $show_ip"
     echo
+    echo "1С DB:"
+    echo
+    echo "${echo_tab}$onec_db_new_name"
+    echo "${echo_tab}$onec_db_new_guid"
 }
 
 ### -------- Functions -------- ###
