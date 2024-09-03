@@ -441,12 +441,12 @@ onec_create_db_dt
 
 ### -------- Gilev TPC-1C -------- ###
 
-### -------- Scrip end -------- ###
+### -------- Script end -------- ###
 
 # Message to log
-log "Scrip end"
+log "Script end"
 
 # Print message to console
 message_at_the_end
 
-### -------- Scrip end -------- ###
+### -------- Script end -------- ###
