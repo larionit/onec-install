@@ -11,57 +11,14 @@ pg_ver=16
 # Dependencies to install
 install_apt_packages="curl wget jq tar unzip fontconfig"
 
-# Path to localegen configuration file
-localegen_conf=/etc/locale.gen
-
-# Which locale to use
-locale=ru_RU.UTF-8
-
 # Oneget 
+oneget_get=platform:linux.x64@latest
+oneget_get_filter="--filter platform=server64_8"
 oneget_repo=oneget
 oneget_repo_owner=Pringlas
 oneget_install_file=oneget_Linux_x86_64.tar.gz
-oneget_get=platform:linux.x64@latest
-oneget_get_filter="--filter platform=server64_8"
 oneget_dir="/opt/oneget"
 oneget_downloads_platform="${oneget_dir}/downloads/platform83"
-
-# Path to postgresql.conf
-pg_conf=/var/lib/pgpro/1c-$pg_ver/data/postgresql.conf
-
-# Name of the script that configures the Postgres Pro repositories
-pg_repo_sh=pgpro-repo-add.sh
-
-# Link to the script that configures the Postgres Pro repositories
-pg_repo_sh_link=https://repo.postgrespro.ru/1c/1c-$pg_ver/keys/$pg_repo_sh
-
-# Define the directory where this script is located
-script_dir="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-
-# Define the name of this script
-script_name=$(basename "$0")
-
-# Defining the directory name and script name if the script is launched via a symbolic link located in /usr/local/bin
-if [[ "$script_dir" == *"/usr/local/bin"* ]]; then
-    real_script_path=$(readlink ${0})
-    script_dir="$( cd -- "$(dirname "$real_script_path")" >/dev/null 2>&1 ; pwd -P )"
-    script_name=$(basename "$real_script_path")
-fi
-
-# Path to log file
-logfile_path="${script_dir}/${script_name%%.*}.log"
-
-# For console output
-echo_tab='     '
-show_ip=$(hostname -I)
-
-# Gilev TPC-1C
-onec_db_new_name=gilev
-onec_db_new_dt_url="http://www.gilev.ru/1c/tpc/GILV_TPC_G1C_83.dt"
-onec_db_new_dt=$(basename "$onec_db_new_dt_url")
-
-# The directory where the installed releases of the 1C Enterprise 8 platform are located
-onec_dir_platform=/opt/1cv8/x86_64
 
 # 1C RAS
 onec_ras_server=localhost
@@ -71,6 +28,29 @@ onec_ras_port=1545
 onec_dbms=PostgreSQL
 onec_dbms_server=localhost
 onec_dbms_user=postgres
+
+# Gilev TPC-1C
+onec_db_new_name=gilev
+onec_db_new_dt_url="http://www.gilev.ru/1c/tpc/GILV_TPC_G1C_83.dt"
+onec_db_new_dt=$(basename "$onec_db_new_dt_url")
+
+# Path to localegen configuration file
+localegen_conf=/etc/locale.gen
+
+# Which locale to use
+locale=ru_RU.UTF-8
+
+# Path to postgresql.conf
+pg_conf=/var/lib/pgpro/1c-$pg_ver/data/postgresql.conf
+
+# Link to the script that configures the Postgres Pro repositories
+pg_repo_sh_link=https://repo.postgrespro.ru/1c/1c-$pg_ver/keys/pgpro-repo-add.sh
+
+# Name of the script that configures the Postgres Pro repositories
+pg_repo_sh=$(basename $pg_repo_sh_link)
+
+# The directory where the installed releases of the 1C Enterprise 8 platform are located
+onec_dir_platform=/opt/1cv8/x86_64
 
 ### ======== Settings ======== ###
 
@@ -100,6 +80,15 @@ function find_and_replace {
     time=$(date +%G_%m_%d-%H_%M_%S)
     cp $target $target.bk_$time
     sed -i "s/${find}/${replace}/g" $target
+}
+
+# Function that receives username from the user
+function read_usr_name {
+    declare -n result=$2
+    text=$1
+    clear
+    echo
+    read -p "$text" "$result"
 }
 
 # Function that receives the password from the user
@@ -176,9 +165,81 @@ function onec_create_db_dt {
     done <<< "$onec_cluster_db_list"
 }
 
+function message_before_start {
+    # Print message to console
+    clear
+    echo
+    echo "Script: $script_name"
+    echo
+    echo "Log: $logfile_path"
+    echo
+    echo "Will be installed:"
+    echo
+    echo "${echo_tab}1C: $onec_install_components"
+    echo
+    echo "${echo_tab}DBMS: Postgres Pro $pg_ver"
+    echo
+
+    # Wait until the user presses enter
+    read -p "Press Enter to start: "
+}
+
+function message_at_the_end {
+    # Print message to console
+    clear
+    echo
+    echo "Script: $script_name"
+    echo
+    echo "Log: $logfile_path"
+    echo
+    echo "Installed:"
+    echo
+    echo "${echo_tab}1C - $onec_installed_version"
+    echo "${echo_tab}oneget - $oneget_ver"
+    echo "${echo_tab}PostgreSQL - $pg_installed_version"
+    echo
+    echo 1C:
+    echo
+    systemctl --no-pager status srv1cv8-$onec_release@default | grep Active
+    echo
+    echo 1C RAS:
+    echo
+    systemctl --no-pager status ras-$onec_release | grep Active
+    echo
+    echo Postgres Pro:
+    echo
+    systemctl --no-pager status postgrespro-1c-$pg_ver | grep Active
+    echo
+    echo "IP: $show_ip"
+    echo
+}
+
 ### -------- Functions -------- ###
 
 ### -------- Preparation -------- ###
+
+# Define the directory where this script is located
+script_dir="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+# Define the name of this script
+script_name=$(basename "$0")
+
+# Defining the directory name and script name if the script is launched via a symbolic link located in /usr/local/bin
+if [[ "$script_dir" == *"/usr/local/bin"* ]]; then
+    real_script_path=$(readlink ${0})
+    script_dir="$( cd -- "$(dirname "$real_script_path")" >/dev/null 2>&1 ; pwd -P )"
+    script_name=$(basename "$real_script_path")
+fi
+
+# Path to this script
+script_path="${script_dir}/${script_name}"
+
+# Path to log file
+logfile_path="${script_dir}/${script_name%%.*}.log"
+
+# For console output
+echo_tab='     '
+show_ip=$(hostname -I)
 
 # Privilege escalation
 elevate
@@ -188,37 +249,23 @@ exec > >(tee -a "$logfile_path") 2>&1
 
 ### -------- Preparation -------- ###
 
-### -------- Message before start  -------- ###
+### -------- Script start  -------- ###
+
+# Message to log
+log "Script start"
 
 # Print message to console
-clear
-echo
-echo "Script: $script_name"
-echo
-echo "Log: $logfile_path"
-echo
-echo "Will be installed:"
-echo
-echo "${echo_tab}1C: $onec_install_components"
-echo
-echo "${echo_tab}DBMS: Postgres Pro $pg_ver"
-echo
+message_before_start
 
-# Wait until the user presses enter
-read -p "Press Enter to start: "
-
-### -------- Message before start -------- ###
+### -------- Script start -------- ###
 
 ### -------- Receiving data from user -------- ###
 
+# Message to log
 log "Receiving data from user"
 
-# Output to console
-clear
-echo
-
 # Getting ITS account login
-read -p "ITS -> login: " onec_its_user
+read_usr_name "ITS -> login: " onec_its_user
 
 # Getting ITS account password
 read_pass "ITS -> password: " "onec_its_pass"
@@ -230,6 +277,7 @@ read_pass "DBMS -> password for postgres user: " "onec_dbms_pass"
 
 ### -------- Dependency installation -------- ###
 
+# Message to log
 log "Installing dependencies"
 
 # Install packages necessary for further work
@@ -244,6 +292,7 @@ fc-cache –fv
 
 ### -------- Setting up locale -------- ###
 
+# Message to log
 log "Setting up locale"
 
 # Uncommenting the line we need
@@ -297,6 +346,7 @@ fi
 
 ### -------- Download and install 1C -------- ###
 
+# Message to log
 log "Download and install 1C"
 
 # Go to the oneget directory
@@ -350,6 +400,7 @@ fi
 
 ### -------- Installing Postgres Pro -------- ###
 
+# Message to log
 log "Installing Postgres Pro"
 
 # Download the script that adds the repository
@@ -380,6 +431,7 @@ pg_installed_version=$(postgres --version | awk '{print $3}')
 
 ### -------- Gilev TPC-1C -------- ###
 
+# Message to log
 log "Creating 'Gilev TPC-1C' base"
 
 # Starting the function of base creation
@@ -387,34 +439,12 @@ onec_create_db_dt
 
 ### -------- Gilev TPC-1C -------- ###
 
-### -------- Message at the end -------- ###
+### -------- Scrip end -------- ###
+
+# Message to log
+log "Scrip end"
 
 # Print message to console
-clear
-echo
-echo "Installed:"
-echo
-echo "${echo_tab}1C - $onec_installed_version"
-echo "${echo_tab}oneget - $oneget_ver"
-echo "${echo_tab}PostgreSQL - $pg_installed_version"
-echo
-echo 1C:
-echo
-systemctl --no-pager status srv1cv8-$onec_release@default | grep Active
-echo
-echo 1C RAS:
-echo
-systemctl --no-pager status ras-$onec_release | grep Active
-echo
-echo Postgres Pro:
-echo
-systemctl --no-pager status postgrespro-1c-$pg_ver | grep Active
-echo
-echo IP:
-echo
-echo "${echo_tab}$show_ip"
-echo
-echo "Log: $logfile_path"
-echo
+message_at_the_end
 
-### -------- Message at the end -------- ###
+### -------- Scrip end -------- ###
