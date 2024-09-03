@@ -11,7 +11,7 @@ pg_ver=16
 # Dependencies to install
 install_apt_packages="curl wget jq tar unzip fontconfig"
 
-# Oneget 
+# Oneget
 oneget_get=platform:linux.x64@latest
 oneget_get_filter="--filter platform=server64_8"
 oneget_repo=oneget
@@ -82,13 +82,11 @@ function find_and_replace {
     sed -i "s/${find}/${replace}/g" $target
 }
 
-# Function that receives username from the user
-function read_usr_name {
+# Function that receives input from the user
+function read_user_input {
     declare -n result=$2
     text=$1
-    clear
-    echo
-    read -p "$text" "$result"
+    read -p "$text" result
 }
 
 # Function that receives the password from the user
@@ -264,8 +262,12 @@ message_before_start
 # Message to log
 log "Receiving data from user"
 
+# Output to console
+clear
+echo
+
 # Getting ITS account login
-read_usr_name "ITS -> login: " onec_its_user
+read_user_input "ITS -> login: " "onec_its_user"
 
 # Getting ITS account password
 read_pass "ITS -> password: " "onec_its_pass"
