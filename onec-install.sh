@@ -156,7 +156,7 @@ function onec_create_db_dt {
             if [[ "$line_two" == "$search_value" ]]; then
                 previous_line=$(echo "$line_one")  
                 onec_db_new_guid=$(echo "$previous_line")
-                exit 0
+                break
             fi
         fi
     prev="${line}"
