@@ -163,6 +163,7 @@ function onec_create_db_dt {
     done <<< "$onec_cluster_db_list"
 }
 
+# Function that displays the start message and waits for user confirmation to continue
 function message_before_start {
     # Print message to console
     clear
@@ -184,6 +185,7 @@ function message_before_start {
     read -p "Нажмите Enter, чтобы продолжить.: "
 }
 
+# Function displaying the final summary of the script execution results
 function message_at_the_end {
     # Print message to console
     clear
