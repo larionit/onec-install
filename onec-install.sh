@@ -167,6 +167,8 @@ function message_before_start {
     # Print message to console
     clear
     echo
+    echo "IP: $show_ip"
+    echo
     echo "Script: $script_name"
     echo
     echo "Log: $logfile_path"
@@ -185,6 +187,8 @@ function message_before_start {
 function message_at_the_end {
     # Print message to console
     clear
+    echo
+    echo "IP: $show_ip"
     echo
     echo "Script: $script_name"
     echo
@@ -207,8 +211,6 @@ function message_at_the_end {
     echo Postgres Pro:
     echo
     systemctl --no-pager status postgrespro-1c-$pg_ver | grep Active
-    echo
-    echo "IP: $show_ip"
     echo
     echo "Created 1C DB (guid | name):"
     echo
@@ -277,7 +279,7 @@ read_user_input "ITS -> login: " "onec_its_user"
 read_pass "ITS -> password: " "onec_its_pass"
 
 # Get password for postgres user
-read_pass "DBMS -> password for postgres user: " "onec_dbms_pass"
+read_pass "DBMS -> password for 'postgres' user: " "onec_dbms_pass"
 
 ### -------- Receiving data from user -------- ###
 
@@ -330,12 +332,12 @@ oneget_ver="${oneget_latest_release}"
 oneget_path="${oneget_dir}/${oneget_ver}/oneget"
 
 # Set the link to download the oneget executable file
-onetget_download_link=https://github.com/$oneget_repo_owner/$oneget_repo/releases/download/$oneget_ver/$oneget_install_file
+oneget_download_link=https://github.com/$oneget_repo_owner/$oneget_repo/releases/download/$oneget_ver/$oneget_install_file
 
 # Continue only if the file does not exist at the specified path
 if [ ! -f "$oneget_path" ]; then
     mkdir -p $oneget_dir/$oneget_ver
-    curl -fsSL $onetget_download_link -o $oneget_dir/$oneget_ver/$oneget_install_file
+    curl -fsSL $oneget_download_link -o $oneget_dir/$oneget_ver/$oneget_install_file
     tar -xvzf $oneget_dir/$oneget_ver/$oneget_install_file -C $oneget_dir/$oneget_ver
     rm $oneget_dir/$oneget_ver/$oneget_install_file
 fi
@@ -399,7 +401,7 @@ systemctl start ras-$onec_release
 
 # Checking the installed version
 if [ -d "$onec_dir_platform/$onec_release" ]; then
-  onec_installed_version="${onec_release}"
+    onec_installed_version="${onec_release}"
 fi
 
 ### -------- Download and install 1C -------- ###
