@@ -5,7 +5,7 @@
 
 # onec-install
 
-<img align="left" width="70" height="70" src="https://github.com/user-attachments/assets/c8a79cc2-07d3-4afd-a57e-4e43b0335921">
+<img align="left" width="70" height="70" src="https://github.com/user-attachments/assets/1b8d6302-b327-49de-bd67-ec517770aa5a">
 
 Скрипты для автоматической установки 1C Предприятие 8.
 
