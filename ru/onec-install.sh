@@ -275,10 +275,10 @@ clear
 echo
 
 # Getting ITS account login
-read_user_input "ITS -> логин: " "onec_its_user"
+read_user_input "ИТС -> логин: " "onec_its_user"
 
 # Getting ITS account password
-read_pass "ITS -> пароль: " "onec_its_pass"
+read_pass "ИТС -> пароль: " "onec_its_pass"
 
 # Get password for postgres user
 read_pass "СУБД -> пароль для пользователя 'postgres': " "onec_dbms_pass"
