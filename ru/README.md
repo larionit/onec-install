@@ -11,7 +11,7 @@
 
 Благодарности: [oneget](https://github.com/v8platform/oneget) и [форк oneget](https://github.com/Pringlas/oneget).
 
-## Быстрый старт
+## Быстрый запуск
 
 Ubuntu:
 

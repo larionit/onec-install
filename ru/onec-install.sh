@@ -182,7 +182,7 @@ function message_before_start {
     echo
 
     # Wait until the user presses enter
-    read -p "Нажмите Enter, чтобы продолжить.: "
+    read -p "Нажмите Enter, чтобы начать: "
 }
 
 # Function displaying the final summary of the script execution results
